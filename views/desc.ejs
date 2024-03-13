@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Book details</title>
+    <%- include('./partials/head') %>
+    <script type="text/javascript">
+        // async function Editbook(bookId) {
+        //     try {
+        //         location.pathname=`/edit/${bookId}`;
+                
+        //     } catch (error) {
+        //         console.error('Error deleting book:', error);
+        //     }
+        // }
+        async function deleteBook(bookId) {
+            try {
+
+                const response = await fetch(`/api/${bookId}`, {
+                    method: 'DELETE'
+                });
+                alert("The book has been deleted");
+                
+            } catch (error) {
+                console.error('Error deleting book:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <%- include('./partials/scripts') %>
+    <%- include('./partials/nav') %>
+    <% if (locals.Book) { %>
+        
+        <div class="container mt-3 d-flex justify-content-start">
+            <div><img src="<%= Book.imageURL %>" class="object-fit-scale border rounded" height="120%" width="100%"/></div>
+            
+            <div class="container ml-3">
+                <div><h1><%= Book.booktitle  %></h1></div>
+                <div><p><b>By: <%= Book.author %> published in <%= Book.publication_year %></b></p></div>
+                <div><p><i>A <%= Book.genre %> </i></p></div>
+                <div><p>ISBN: <%= Book.ISBN %></p></div>
+                <div><h3>Ratings: <%= Book.ratings%></h3></div>
+                <div><p>Description: <%= Book.description %></p></div>
+                
+            </div>
+        </div>
+        <div class="d-flex justify-content-evenly m-5"><a href="/api/edit/<%= Book._id %>"><button class="btn btn-success">Edit this book</button> </a>
+            <form onsubmit="deleteBook('<%= Book._id %>')"><button type="submit" class="btn btn-outline-danger">Delete this book</button></form></div>
+    <% } %>
+</body>
+</html>

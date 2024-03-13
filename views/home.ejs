@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head') %>
+    
+    <title>Home</title>
+  </head>
+  <body>
+    <%- include('./partials/scripts') %>
+    <%- include('./partials/nav') %>
+    <!-- <h1>All books</h1>
+    <h2><a href="/newbook">Add new book</a></h2> -->
+    <!-- <input type="text" name="search" id="searchbar" placeholder="Book Title" />
+    <button type="button" id="searchbutton">Search</button> -->
+
+    <!-- <div>
+      Filter by genre:
+      <select name="filter" id="filter">
+        <option selected>Select</option>
+        <option value="romance">Romance</option>
+        <option value="action">Action</option>
+        <option value="comedy">Comedy</option>
+        <option value="drama">Drama</option>
+        <option value="sci-fi">Sci-fi</option>
+        <option value="thriller">Thriller</option>
+        <option value="mystery">Mystery</option>
+        <option value="adventure">Adventure</option>
+        <option value="fantasy">Fantasy</option>
+        <option value="horror">Horror</option>
+      </select>
+    </div> -->
+    <% if (locals.Allbook) { %>
+    <div id="searchResults" class="d-flex flex-wrap">
+      <% Allbook.forEach(element => { %>
+      <div class="card" style="height:10rem ; width: 25rem; margin:5px">
+        <div class="card-body m-1">
+          <h5 class="card-title"><%= element.booktitle %></h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">
+            <%= element.author %>
+          </h6>
+          <a href="/api/<%= element.id %>" class="position-absolute bottom-0 end-0 translate-middle btn btn-outline-secondary">View</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <script type="text/javascript">
+      //----------SEARCH FUNCTIONALITY-----------------------
+      const searchbutton = document.getElementById("searchbutton");
+      function handleSearch(event) {
+        event.preventDefault();
+        const searchbar = document.getElementById("searchbar");
+        const searchText = searchbar.value;
+        fetch(`/search?query=${searchText}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Search successful");
+            updateUI(data);
+          })
+          .catch((error) => console.error("Error searching:", error));
+      }
+      if (searchbutton) searchbutton.addEventListener("click", handleSearch);
+
+      //------------------FILTER FUNCTIONALITY------------------------
+      const genre = document.getElementById("filter");
+      console.log("Dropdown:", genre);
+      function handleFilter(event) {
+        event.preventDefault();
+        const selectedGenre = genre.value;
+        console.log("Selected:", selectedGenre);
+        fetch(`/filter?query=${selectedGenre}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Response data:", data);
+            updateUI(data);
+          })
+          .catch((error) => console.error("Error filtering:", error));
+      }
+      if (genre) genre.addEventListener("change", handleFilter);
+
+      function updateUI(data) {
+        const container = document.getElementById("searchResults");
+        container.innerHTML = ""; // Clear previous search results
+
+        data.forEach((book) => {
+          const card = document.createElement("div");
+          card.style="height:10rem ; width: 25rem; margin:5px"
+          card.classList.add("card");
+          card.innerHTML = `
+           
+            <div class="card-body m-1">
+                <h5 class="card-title">${book.booktitle}</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">${book.author}</h6>
+                <a href="/api/${book._id}" class="position-absolute bottom-0 end-0 translate-middle btn btn-outline-secondary">View</a>
+            </div>
+          
+        `;
+          container.appendChild(card);
+        });
+      }
+    </script>
+  </body>
+</html>
